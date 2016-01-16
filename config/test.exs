@@ -7,7 +7,7 @@ config :meli, Meli.Endpoint,
   server: false
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :info
 
 # Configure your database
 config :meli, Meli.Repo,
@@ -17,3 +17,9 @@ config :meli, Meli.Repo,
   database: "meli_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :exq,
+  host: "127.0.0.1",
+  port: 6379,
+  namespace: "meli_test",
+  concurrency: :infinite

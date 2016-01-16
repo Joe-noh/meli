@@ -7,5 +7,7 @@ defmodule Meli.Router do
 
   scope "/api", Meli do
     pipe_through :api
+
+    post "/mail", MailController, :create
   end
 end
