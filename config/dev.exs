@@ -29,3 +29,14 @@ config :meli, Meli.Repo,
   database: "meli_dev",
   hostname: "localhost",
   pool_size: 10
+
+config :exq,
+  host: "127.0.0.1",
+  port: 6379,
+  namespace: "meli_dev",
+  concurrency: 10,
+  queues: ["default"],
+  poll_timeout: 50,
+  scheduler_poll_timeout: 200,
+  scheduler_enable: true,
+  max_retries: 3
