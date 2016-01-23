@@ -36,11 +36,13 @@ defmodule Meli.MailWorker do
   end
 
   defp smtp_prod_config do
+    config = Application.get_env(:meli, :smtp)
+
     %Mailman.SmtpConfig{
-      relay: "smtp.gmail.com",
-      username: Application.get_env(:meli, :smtp_username),
-      password: Application.get_env(:meli, :smtp_password),
-      port: 465,
+      relay:    config[:relay],
+      username: config[:username],
+      password: config[:password],
+      port:     config[:port],
       ssl: true,
       auth: :always
     }
