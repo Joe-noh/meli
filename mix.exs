@@ -30,7 +30,8 @@ defmodule Meli.Mixfile do
       {:gettext, "~> 0.9"},
       {:cowboy, "~> 1.0"},
 
-      {:exq, "~> 0.6"}
+      {:exq, "~> 0.6"},
+      {:mailman, github: "Joe-noh/mailman"}
     ]
   end
 
