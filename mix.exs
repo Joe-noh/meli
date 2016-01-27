@@ -31,6 +31,7 @@ defmodule Meli.Mixfile do
       {:cowboy, "~> 1.0"},
 
       {:exq, "~> 0.6"},
+      {:exq_ui, "~> 0.6"},
       {:mailman, github: "Joe-noh/mailman"}
     ]
   end
