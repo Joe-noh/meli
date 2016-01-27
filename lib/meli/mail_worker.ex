@@ -29,13 +29,6 @@ defmodule Meli.MailWorker do
   end
 
   defp smtp_config do
-    case Mix.env do
-      :prod  -> smtp_prod_config
-      _other -> smtp_test_config
-    end
-  end
-
-  defp smtp_prod_config do
     config = Application.get_env(:meli, :smtp)
 
     %Mailman.SmtpConfig{
@@ -43,12 +36,9 @@ defmodule Meli.MailWorker do
       username: config[:username],
       password: config[:password],
       port:     config[:port],
-      ssl: true,
-      auth: :always
+      ssl:      config[:ssl],
+      auth:     config[:auth],
+      tls:      config[:tls]
     }
-  end
-
-  defp smtp_test_config do
-    %Mailman.TestConfig{store_deliveries: true}
   end
 end
