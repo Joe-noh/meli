@@ -45,4 +45,25 @@ defmodule Meli.Mail do
   defp do_eval_eex(binary, binding = [data: _]) when is_binary(binary) do
     EEx.eval_string(binary, binding)
   end
+
+  @spec to_mailman_email(t) :: %Mailman.Email{}
+  def to_mailman_email(mail) do
+    %Mailman.Email{
+      subject: mail.subject,
+      from:    pack(mail.from_name, mail.from_address),
+      to:      pack(mail.to_names,  mail.to_addresses),
+      cc:      pack(mail.cc_names,  mail.cc_addresses),
+      bcc:     pack(mail.bcc_names, mail.bcc_addresses),
+      text:    mail.text,
+      html:    mail.html
+    }
+  end
+
+  @spec pack([String.t] | String.t, [String.t] | String.t) :: [String.t] | String.t
+  defp pack(names, addresses) when is_list(names) and is_list(addresses) do
+    Enum.zip(names, addresses)
+    |> Enum.map(fn {name, address} -> pack(name, address) end)
+  end
+
+  defp pack(name, address), do: "#{name} <#{address}>"
 end
