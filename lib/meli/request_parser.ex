@@ -3,7 +3,7 @@ defmodule Meli.RequestParser do
   @doc """
   This parses and transforms request parameters from end-user into Mail struct(s).
   """
-  @spec parse(map) :: Meli.Mail.t | [Meli.Mail.t]
+  @spec parse(map) :: [Meli.Mail.t]
   def parse(params = %{"mails" => mails}) when is_list(mails) do
     common = Map.get(params, "common", %{})
 
