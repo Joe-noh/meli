@@ -1,24 +1,23 @@
 defmodule Meli.MailController do
   use Meli.Web, :controller
 
-  plug :scrub_params, "mail"
+  plug :scrub_params, "mails"
 
-  def create(conn, %{"mail" => mail_params}) do
-    case Exq.enqueue(Exq, "default", Meli.MailWorker, [mail_params]) do
-      {:ok, ack}    -> render_ok(conn, mail_params)
-      {:error, why} -> render_error(conn, why)
+  def create(conn, params) do
+    resp = params
+      |> Meli.RequestParser.parse
+      |> enqueue_mails
+
+    conn |> put_status(:created) |> json(resp)
+  end
+
+  defp enqueue_mails(mails) do
+    Enum.reduce mails, %{queued: [], failed: []}, fn mail, result ->
+      IO.inspect mail
+      case Exq.enqueue(Exq, "default", Meli.MailWorker, [mail]) do
+        {:ok, _}    -> Map.update! result, :queued, &[mail | &1]
+        {:error, _} -> Map.update! result, :failed, &[mail | &1]
+      end
     end
-  end
-
-  defp render_ok(conn, mail_params) do
-    conn
-    |> put_status(:created)
-    |> json(%{"mail" => mail_params})
-  end
-
-  defp render_error(conn, why) do
-    conn
-    |> put_status(500)
-    |> json(%{error: why})
   end
 end

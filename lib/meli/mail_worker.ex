@@ -1,30 +1,36 @@
 defmodule Meli.MailWorker do
   require Logger
 
-  def perform(mail_params) do
-    {:ok, response} = mail_params
-      |> build_mail
-      |> Mailman.deliver(config)
-
-    Logger.info response
+  def perform(mail = %Meli.Mail{}) do
+    mail |> do_perform
   end
 
-  defp build_mail(mail) do
-    %Mailman.Email{
-      subject: Map.get(mail, "subject", ""),
-      from: Map.get(mail, "from"),
-      to:   Map.get(mail, "to", []),
-      cc:   Map.get(mail, "cc", []),
-      bcc:  Map.get(mail, "bcc", []),
-      text: Map.get(mail, "text", ""),
-      html: Map.get(mail, "html", "")
-    }
+  def perform(mail = %{}) do
+    mail |> Meli.Mail.new |> do_perform
+  end
+
+  defp do_perform(mail) do
+    {:ok, response} = mail
+      |> Meli.Mail.to_mailman_email
+      |> Mailman.deliver(config)
+
+    Logger.info inspect(:mimemail.decode(response))
+  end
+
+  defmodule DoNothing do
+    defstruct []
+  end
+
+  defimpl Mailman.Composer, for: DoNothing do
+    def compile_part(_config, :html, email), do: email.html
+    def compile_part(_config, :text, email), do: email.text
+    def compile_part(_config, :attachment, _), do: ""
   end
 
   defp config do
     %Mailman.Context{
       config:   smtp_config,
-      composer: %Mailman.EexComposeConfig{}
+      composer: %DoNothing{}
     }
   end
 
