@@ -60,10 +60,18 @@ defmodule Meli.Mail do
   end
 
   @spec pack([String.t] | String.t, [String.t] | String.t) :: [String.t] | String.t
-  defp pack(names, addresses) when is_list(names) and is_list(addresses) do
-    Enum.zip(names, addresses)
+  defp pack(names, addresses) when is_list(names) and is_list(addresses) and length(names) == length(addresses) do
+    names
+    |> Enum.zip(addresses)
     |> Enum.map(fn {name, address} -> pack(name, address) end)
   end
 
+  defp pack(names, addresses) when is_list(names) and is_list(addresses) and length(names) < length(addresses) do
+    List.duplicate("", length(addresses))
+    |> Enum.zip(addresses)
+    |> Enum.map(fn {name, address} -> pack(name, address) end)
+  end
+
+  defp pack("", address), do: "<#{address}>"
   defp pack(name, address), do: "#{name} <#{address}>"
 end
